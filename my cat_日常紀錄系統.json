@@ -1,0 +1,574 @@
+{
+  "name": "my cat_日常紀錄系統",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -64
+      ],
+      "id": "67d5ee0d-6dee-431a-bed3-8671d1213b31",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "caa6ae9b-fd8c-4e54-a689-b912ae3f77bc",
+              "name": "用戶訊息",
+              "value": "買肉泥50元，今天沒尿尿+便便很硬大三顆，早25g晚30g",
+              "type": "string"
+            },
+            {
+              "id": "344d79b8-cd12-40b0-ac66-128e524547ac",
+              "name": "紀錄時間",
+              "value": "={{ $now.setZone('Asia/Taipei').toFormat('MM/dd HH:mm a') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "6b7d5f4d-2af6-4270-8d15-4e790200ef7d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#用戶訊息\n{{ $json['用戶訊息'] }}\n# 紀錄時間\n{{ $json['紀錄時間'] }}\n# 便便狀態\n{\n\"便便狀態\": \"正常\",\n\"便便狀態\": \"太硬\"\n}",
+        "options": {
+          "systemMessage": "=#任務\n根據用戶訊息，寫成特定的回覆格式範例。\n#回復範例\n{\n\"花費品項\":\"肉泥\",\n\"金額\":\"50\",\n\"排泄狀況\":\"今天有大5顆+尿尿\",\n\"早餐份量(g)\":\"25\",\n\"晚餐份量(g)\":\"30\"\n\"紀錄時間\":\"{{ $json['紀錄時間'] }}\"\n}\n\n#任務\n請分析排泄狀況文字，若內容暗示便便太硬、太乾或呈顆粒狀，請在便便狀態填入『太硬』；若正常則填入『正常』"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "632dd260-8544-4418-86d4-27853fd0504f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        144
+      ],
+      "id": "802cca88-b7ec-4e65-a066-8a41ffd0480f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        416,
+        -64
+      ],
+      "id": "a06bef36-f5b7-4d0a-8f9d-e462cc400e3e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "t9F1OhFe4IIkQTmI",
+          "mode": "list",
+          "cachedResultName": "My cat_日常紀錄系統",
+          "cachedResultUrl": "/projects/GqB8DBB7lXgjpTar/datatables/t9F1OhFe4IIkQTmI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "poop_status": "={{ $json['便便狀態'] }}",
+            "item": "={{ $json['花費品項'] }}",
+            "price": "={{ $json['金額'] }}",
+            "state": "={{ $json['排泄狀況'] }}",
+            "breakfast": "={{ $json['早餐份量(g)'] }}",
+            "dinner": "={{ $json['晚餐份量(g)'] }}",
+            "time": "={{ $json['紀錄時間'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "item",
+              "displayName": "item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "breakfast",
+              "displayName": "breakfast",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "dinner",
+              "displayName": "dinner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "poop_status",
+              "displayName": "poop_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        -128
+      ],
+      "id": "8b3d0a41-92c3-4d44-8ae3-f1d9ff5e364c",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['便便狀態'] }}",
+                    "rightValue": "正常",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8e4de27e-ddd5-4d60-b878-01ca550aaf24"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "正常"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "a2067ee0-19f8-41e3-822a-df39379d8fe7",
+                    "leftValue": "={{ $json['便便狀態'] }}",
+                    "rightValue": "太硬",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "太硬"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        640,
+        -64
+      ],
+      "id": "77d672fb-443c-49aa-8cb4-b8a57d0fca1f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=#便便狀態\n{{ $json['便便狀態'] }}",
+        "options": {
+          "systemMessage": "#任務\n自動發送一則訊息:⚠️ 貓咪今天便便太硬囉！建議處置：準備肉泥騙水，或餵食化毛膏。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        912,
+        32
+      ],
+      "id": "6dd63731-a10b-4e16-a0ea-9ea9aef30508",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        224
+      ],
+      "id": "06c7c42d-9929-44e7-821c-ea08ef1fd368",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "U71f97ea773071f488f9a5e40c1711090",
+        "messages": {
+          "values": [
+            {
+              "text": "={{ $json.output }}"
+            }
+          ]
+        }
+      },
+      "type": "@aotoki/n8n-nodes-line-messaging.lineMessaging",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        32
+      ],
+      "id": "1bf4a6e3-8d9b-46d4-8f2f-e433af036210",
+      "name": "Line Messaging",
+      "credentials": {
+        "lineMessagingApi": {
+          "id": "J5ZsbzzbpR7ATftk",
+          "name": "Line Messaging account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "t9F1OhFe4IIkQTmI",
+          "mode": "list",
+          "cachedResultName": "My cat_日常紀錄系統",
+          "cachedResultUrl": "/projects/GqB8DBB7lXgjpTar/datatables/t9F1OhFe4IIkQTmI"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "poop_status": "={{ $json['便便狀態'] }}",
+            "item": "={{ $json['花費品項'] }}",
+            "price": "={{ $json['金額'] }}",
+            "state": "={{ $json['排泄狀況'] }}",
+            "breakfast": "={{ $json['早餐份量(g)'] }}",
+            "dinner": "={{ $json['晚餐份量(g)'] }}",
+            "time": "={{ $json['紀錄時間'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "item",
+              "displayName": "item",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "price",
+              "displayName": "price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "breakfast",
+              "displayName": "breakfast",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "dinner",
+              "displayName": "dinner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "poop_status",
+              "displayName": "poop_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        16
+      ],
+      "id": "f96593dc-f7cc-4df7-902b-6950f468118c",
+      "name": "Insert row1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Line Messaging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7c94981f-b178-466b-b20d-ebeda8e73e13",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58886b36bfb2de372aa881fc19e53a395d93275e3c7daeb9178cd891eb4aa9ae"
+  },
+  "nodeGroups": [],
+  "id": "KBkVlMysTNkkmm0K",
+  "tags": []
+}
